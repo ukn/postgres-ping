@@ -14,43 +14,41 @@ import (
 func main() {
 	var db *sql.DB
 	var err error
-	user := "test"
-	pass := "test"
-	dbName := "postgres"
-	sslMode := "disable"
-	connectTimeout := "2"
 	connectionFailed := true
 	errorMessage := errors.New("")
 	verbose := false
 	var interval time.Duration = 2
 
-	user = os.Getenv("user")
+	user := os.Getenv("user")
 	if user == "" {
-		user = "test"
+		user = "postgres"
 	}
 
-	pass = os.Getenv("pass")
-	if pass == "" {
-		pass = "test"
-	}
+	pass := os.Getenv("pass")
 
 	host := os.Getenv("host")
 	if host == "" {
 		host = "127.0.0.1"
 	}
 
-	dbName = os.Getenv("dbname")
+	dbName := os.Getenv("dbname")
 	if dbName == "" {
 		dbName = "postgres"
 
 	}
 
-	sslMode = os.Getenv("sslmode")
+	dbPort := os.Getenv("port")
+	if dbPort == "" {
+		dbPort = "5432"
+
+	}
+
+	sslMode := os.Getenv("sslmode")
 	if sslMode == "" {
 		sslMode = "disable"
 	}
 
-	connectTimeout = os.Getenv("timeout")
+	connectTimeout := os.Getenv("timeout")
 	if connectTimeout == "" {
 		connectTimeout = "2"
 	}
@@ -71,7 +69,7 @@ func main() {
 	}
 
 	// connection string
-	connStr := "postgres://" + user + ":" + pass + "@" + host + "/" + dbName + "?sslmode=" + sslMode + "&connect_timeout=" + connectTimeout
+	connStr := "postgres://" + user + ":" + pass + "@" + host + ":" + dbPort + "/" + dbName + "?sslmode=" + sslMode + "&connect_timeout=" + connectTimeout
 	log.Println("Connection string:", "postgres://"+user+":***@"+host+"/"+dbName+"?sslmode="+sslMode+"&connect_timeout="+connectTimeout)
 
 	db, err = sql.Open("postgres", connStr)
@@ -88,8 +86,10 @@ func main() {
 			errorMessage = err
 
 		} else {
+			if (connectionFailed && err == nil) || verbose {
+				log.Println("Postrgres ping", host, "successful")
+			}
 			connectionFailed = false
-			log.Println("Postrgres ping", host, "successful")
 		}
 		time.Sleep(interval * time.Second)
 
