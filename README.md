@@ -8,6 +8,9 @@ Could be useful to track db reachability during maintenance work.
 
 Use the following environment variables can be set to override default connection params:
 
+```
+envVar - description (default value)
+-----------------------------
 user - username (postgres)
 pass - password (empty string)
 host - db hostname or ip (127.0.0.1)
@@ -17,3 +20,4 @@ sslmode - ssl mode (disable)
 timeout - connection timeout (2s)
 verbose - verbose console logging (false)
 interval - ping interval (2s)
+```
